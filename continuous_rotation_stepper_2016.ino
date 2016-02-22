@@ -6,9 +6,9 @@
 #include <AccelStepper.h>
 
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED } ;
-byte ip[] = { 192, 168, 1, 100 };
+byte ip[] = { 192, 168, 0, 100 };
 int serverPort = 10000; // (incoming port)
-
+int destPort = 9000; 
 AccelStepper stepper1(4, 2, 3, 5, 6);
 long val1 = 0;
 
@@ -28,7 +28,7 @@ void setup() {
 
 void loop() {
 
-
+  stepper1.run();
   float reading = parseOSCMessage();
 
   if( reading != -1.0 )
@@ -51,16 +51,18 @@ float parseOSCMessage() {
   if ((size = Udp.parsePacket()) > 0) {
     while (size--)
       msgIn.fill(Udp.read());
-      msgIN.route("/compass/2",funcStepper1);
     return(msgIn.getFloat(0));
   } else {
     return(-1.0);
+    msgIn.route("/compass/2",funcValue1);
   }
+  
 }
 
-void funcStepper1(OSCMessage &msg, int addrOffset ){
 
-  float value = stepCounter.linear_position()
+void funcValue1(OSCMessage &msg, int addrOffset ){
+
+  float value = stepCounter.linear_position();
   val1 = (long)(value*200);
   OSCMessage msgOUT("/compass/2");
   stepper1.moveTo(val1);
